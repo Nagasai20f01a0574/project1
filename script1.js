@@ -53,11 +53,15 @@ const observer = new IntersectionObserver(entries => {
 document.querySelectorAll('.service-card, .testimonial-card, .pricing-card')
   .forEach(card => observer.observe(card));
 
+
+  
 // =======================
-// 🎬 PROJECT CARD ANIMATIONS
+// 🎬 PROJECT CARD ANIMATIONS (your existing function kept)
 // =======================
 function animateProjects() {
   const projectCards = document.querySelectorAll('.project-card');
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -69,35 +73,211 @@ function animateProjects() {
   }, { threshold: 0.1 });
 
   projectCards.forEach(card => {
-    card.style.opacity = '0';
-    card.style.transform = 'translateY(20px)';
-    card.style.transition = 'all 0.6s ease';
-    observer.observe(card);
+    if (prefersReduced) {
+      card.style.opacity = '1';
+      card.style.transform = 'none';
+    } else {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(20px)';
+      card.style.transition = 'all 0.6s ease';
+      observer.observe(card);
+    }
   });
 }
 document.addEventListener('DOMContentLoaded', animateProjects);
 
+
+// ==============
+// Inline card details toggler (NEW)
+// ==============
+(function() {
+  // State for currently open card
+  let activeCard = null;
+
+  // Open the card: add .open, set aria attributes, focus button
+  function openCard(card) {
+    if (!card) return;
+    closeActiveCard();
+    card.classList.add('open');
+    card.setAttribute('aria-expanded', 'true');
+    const details = card.querySelector('.card-details');
+    if (details) details.setAttribute('aria-hidden', 'false');
+    activeCard = card;
+    // focus enroll button for accessibility if present
+    const btn = card.querySelector('.btn-enroll');
+    if (btn) btn.focus({ preventScroll: true });
+  }
+
+  // Close current active card if any
+  function closeActiveCard() {
+    if (!activeCard) return;
+    activeCard.classList.remove('open');
+    activeCard.setAttribute('aria-expanded', 'false');
+    const details = activeCard.querySelector('.card-details');
+    if (details) details.setAttribute('aria-hidden', 'true');
+    activeCard = null;
+  }
+
+  // Toggle logic: if clicked card is active close it, otherwise open it
+  function toggleCard(card) {
+    if (!card) return;
+    if (card === activeCard) closeActiveCard();
+    else openCard(card);
+  }
+
+  // Initialize behavior after DOM is ready
+  document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('.project-card');
+
+    // Ensure each card has the proper accessibility attributes
+    cards.forEach((card, idx) => {
+      if (!card.hasAttribute('data-key')) card.setAttribute('data-key', `p${idx+1}`);
+      if (!card.hasAttribute('role')) card.setAttribute('role', 'button');
+      if (!card.hasAttribute('tabindex')) card.setAttribute('tabindex', '0');
+      if (!card.hasAttribute('aria-expanded')) card.setAttribute('aria-expanded', 'false');
+
+      // Make sure the details element exists; if not, create a basic fallback to avoid errors
+      if (!card.querySelector('.card-details')) {
+        const fallback = document.createElement('div');
+        fallback.className = 'card-details';
+        fallback.innerHTML = `<div class="card-details-inner"><p>No details provided.</p></div>`;
+        fallback.setAttribute('aria-hidden', 'true');
+        card.appendChild(fallback);
+      }
+    });
+
+    // Click listener on each card
+    cards.forEach(card => {
+      card.addEventListener('click', (e) => {
+        // If click happened inside the details inner (buttons, links), don't toggle the card
+        if (e.target.closest('.card-details-inner')) return;
+        toggleCard(card);
+      });
+
+      // Keyboard support: Enter / Space to toggle, Escape to close
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleCard(card);
+        } else if (e.key === 'Escape') {
+          closeActiveCard();
+        }
+      });
+    });
+
+    // Click outside closes any open card
+    document.addEventListener('click', (e) => {
+      // If click inside a card or inside a details element, do nothing
+      if (e.target.closest('.project-card') || e.target.closest('.card-details')) return;
+      if (activeCard) closeActiveCard();
+    });
+
+    // Global Escape closes
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && activeCard) closeActiveCard();
+    });
+
+    // Optional: close card when window is resized (prevents layout issues)
+    window.addEventListener('resize', () => {
+      // if user prefers reduced motion or layout change, close active card to avoid stuck states
+      if (activeCard) closeActiveCard();
+    });
+  });
+})();
+
+
 // =======================
 // ♾️ TESTIMONIAL SCROLL
 // =======================
-const track = document.querySelector('.testimonial-track');
-const cards = document.querySelectorAll('.testimonial-card');
-if (track && cards.length > 0) {
-  const cardWidth = 350; // must match CSS width
-  const gap = 30; // must match CSS gap
-  const totalWidth = (cardWidth * cards.length) + (gap * (cards.length - 1));
-  track.style.width = `${totalWidth}px`;
-
+/* Testimonials manual carousel with arrows + drag + keyboard */
+(function () {
   const grid = document.querySelector('.testimonial-grid');
-  if (grid) {
-    grid.addEventListener('mouseenter', () => track.style.animationPlayState = 'paused');
-    grid.addEventListener('mouseleave', () => track.style.animationPlayState = 'running');
+  const viewport = document.querySelector('.testimonial-viewport');
+  const track = document.querySelector('.testimonial-track');
+  const cards = document.querySelectorAll('.testimonial-card');
+  const prevBtn = document.querySelector('.testimonial-nav.prev');
+  const nextBtn = document.querySelector('.testimonial-nav.next');
+
+  if (!track || cards.length === 0 || !viewport) return;
+
+  const cardWidth = 350; // must match CSS .testimonial-card width
+  const gap = 30;        // must match CSS gap on .testimonial-track
+  const step = cardWidth + gap;
+
+  // Calculate full width and set track style width (optional)
+  const totalWidth = (cardWidth * cards.length) + (gap * (cards.length - 1));
+  track.style.width = totalWidth + 'px';
+
+  // Helper to update nav disabled state
+  function updateNav() {
+    const maxScrollLeft = track.scrollWidth - viewport.clientWidth;
+    prevBtn.disabled = (viewport.scrollLeft <= 5);
+    nextBtn.disabled = (viewport.scrollLeft >= maxScrollLeft - 5);
   }
 
-  // Slower movement — increase multiplier for slower speed
-  const duration = cards.length * 25; 
-  track.style.animationDuration = `${duration}s`;
-}
+  // Scroll to next / prev card (with bounds)
+  function scrollBy(direction) {
+    const target = Math.round(viewport.scrollLeft / step) * step + (direction * step);
+    viewport.scrollTo({ left: target, behavior: 'smooth' });
+  }
+
+  // Attach arrow handlers
+  prevBtn.addEventListener('click', () => scrollBy(-1));
+  nextBtn.addEventListener('click', () => scrollBy(1));
+
+  // Update nav on scroll
+  viewport.addEventListener('scroll', () => {
+    // throttle with rAF
+    if (typeof window.requestAnimationFrame === 'function') {
+      window.requestAnimationFrame(updateNav);
+    } else {
+      updateNav();
+    }
+  });
+
+  // Keyboard navigation (left/right arrows) when grid focused
+  grid.setAttribute('tabindex', '0');
+  grid.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') { e.preventDefault(); scrollBy(-1); }
+    if (e.key === 'ArrowRight') { e.preventDefault(); scrollBy(1); }
+  });
+
+  // Drag to scroll (desktop & mobile)
+  let isDown = false, startX, scrollStart;
+  viewport.addEventListener('pointerdown', (e) => {
+    isDown = true;
+    viewport.setPointerCapture(e.pointerId);
+    startX = e.clientX;
+    scrollStart = viewport.scrollLeft;
+    viewport.classList.add('dragging');
+  });
+  viewport.addEventListener('pointermove', (e) => {
+    if (!isDown) return;
+    const dx = startX - e.clientX;
+    viewport.scrollLeft = scrollStart + dx;
+  });
+  viewport.addEventListener('pointerup', (e) => {
+    if (!isDown) return;
+    isDown = false;
+    viewport.releasePointerCapture(e.pointerId);
+    // Snap to nearest card
+    const nearest = Math.round(viewport.scrollLeft / step) * step;
+    viewport.scrollTo({ left: nearest, behavior: 'smooth' });
+    viewport.classList.remove('dragging');
+  });
+  viewport.addEventListener('pointercancel', () => {
+    isDown = false;
+    viewport.classList.remove('dragging');
+  });
+
+  // On resize, update nav state
+  window.addEventListener('resize', () => {
+    updateNav();
+  });
+
+  // Init nav state
+  updateNav();
+})();
 
 // =======================
 // 📩 CONTACT POPUP (Iframe-based)

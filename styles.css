@@ -1,3 +1,6 @@
+@import url("https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css");
+@import url("https://fonts.googleapis.com/css?family=Poppins:var(--heading-2-font-weight),var(--sub-head-small-font-weight),400,var(--sub-head-1-font-weight),600,var(--head-1-font-weight),var(--body-font-weight),500,700,var(--body-2-font-weight),var(--sub-head-font-weight)|Raleway:600|Manrope:400,600|Roboto:var(--m3-body-large-font-weight)");
+
 /* Base Styles */
 :root {
     --primary: #0B7077;
@@ -11,6 +14,7 @@
     --border-radius: 8px;
     --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     --transition: all 0.3s ease;
+    --override-header-height: 72px;
 }
 
 * {
@@ -67,7 +71,7 @@ img {
 
 .container {
     width: 100%;
-    max-width: 1200px;
+    max-width: 1350px;
     margin: 0 auto;
     padding: 0 20px;
 }
@@ -117,6 +121,7 @@ img {
 .section-title {
     text-align: center;
     margin-bottom: 60px;
+    color: var(--primary);
 }
 
 /* Header Styles */
@@ -130,19 +135,38 @@ header {
     z-index: 1000;
     padding: 15px 0;
 }
-
+ 
 .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
+/* Wrapper for logo+text */
 .logo {
+    display: flex;              /* keeps items in ONE line */
+    align-items: center;        /* vertically center logo + text */
+    gap: 10px;                  /* spacing between logo and text */
+    text-decoration: none;
+}
+
+/* Logo image */
+.logo-img {
+    height: 42px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+}
+
+/* Logo text (ProjectKits) */
+.site-name {
     font-size: 1.8rem;
     font-weight: 800;
     color: var(--primary);
-    text-decoration: none;
+    line-height: 1;
+    margin: 0;
 }
+
 
 .nav-links {
     display: flex;
@@ -178,9 +202,14 @@ header {
   height: 6px;
 }
 
+
+header.container {
+    padding-left: 0;
+    padding-right: 0;
+}
 /* Hero Section */
 .hero {
-    padding: 120px 0;
+    padding: calc(var(--override-header-height) + 12px) 0 40px;
     border-radius: 0 0 48px 48px;
     background: #D2E6E4;
 }
@@ -195,6 +224,8 @@ header {
 .hero-text {
     flex: -1;
     max-width: 600px;
+    text-align: left;
+    
 }
 
 .hero-image {
@@ -270,6 +301,7 @@ header {
     display: flex;
     align-items: center;
     gap: 10px;
+    margin-bottom: 20px;
 }
 
 .reviews .stars {
@@ -287,17 +319,20 @@ header {
 }
 
 /* Responsive Styles */
+/* ----------- FIXED 992px BREAKPOINT ----------- */
 @media (max-width: 992px) {
     .hero-content {
         flex-direction: column;
-        text-align: center;
+        text-align: left !important;      /* FIX: Keep everything left aligned */
+        align-items: flex-start !important;
     }
     
     .hero-text {
         max-width: 100%;
         display: flex;
         flex-direction: column;
-        align-items: center;
+        text-align: left !important;      /* FIX: Force left alignment */
+        align-items: flex-start !important;
     }
     
     .hero-image {
@@ -318,19 +353,34 @@ header {
     }
     
     .hero-btns {
-        justify-content: center;
+        justify-content: flex-start !important;   /* FIX: Left align buttons */
     }
 }
 
+/* ----------- FIXED 768px BREAKPOINT ----------- */
 @media (max-width: 768px) {
     .hero-img {
         max-height: 300px;
     }
     
     .hero-btns {
-        flex-direction: column;
+        flex-direction: row !important;        /* FIX: Buttons side-by-side */
+        justify-content: flex-start !important;
+        gap: 10px;                              /* Small gap between buttons */
+        width: 100%;
+    }
+
+    .hero-btns .btn {
+        width: auto !important;                /* FIX: Prevent full-width buttons */
+        white-space: nowrap;                   /* Prevent text breaking */
+    }
+
+    header .site-name {
+        display: none !important;
     }
 }
+
+
 
 /* Services Section */
 .services {
@@ -356,7 +406,7 @@ header {
 
 .service-card:hover {
     transform: translateY(-10px);
-    box-shadow: 0 15px 30px #0B7077;
+    box-shadow: 0 10px 20px #169ea825;
 }
 
 .service-icon {
@@ -371,33 +421,35 @@ header {
 }
 
 /* Projects */
-
-/* Projects Grid */
+/* Projects grid (keeps your original responsive grid) */
 .projects-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 30px;
 }
 
+/* Card base */
 .project-card {
     position: relative;
     width: 280px;
     height: 300px;
-    border: 2px solid;
+    border: 2px solid;              /* keeps your border - optionally set color with --primary or a hex */
     background: white;
     border-radius: 10px;
     overflow: hidden;
-    border: 2px solid;
     box-shadow: var(--box-shadow);
-    transition: var(--transition);
+    transition: transform 0.35s ease, box-shadow 0.35s ease; /* avoids using var(--transition) to be explicit */
     text-align: center;
+    cursor: pointer;
 }
 
+/* hover lift - smaller than before so it doesn't conflict with open state */
 .project-card:hover {
-    transform: translateY(-30px);
-    box-shadow: 0 15px 30px #0B7077;
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(11,112,119,0.12);
 }
 
+/* Image & title (kept from your original) */
 .project-img {
     width: 100%;
     height: 235px;
@@ -409,11 +461,96 @@ header {
     padding: 20px;
     text-align: center;
     color: var(--primary);
-    font-size: 1 rem;
+    font-size: 1rem;
     margin: 0;
 }
+.details-text {
+    font-size: 0.90rem;
+    line-height: 1.15rem;
+    color: #444;
+    margin-bottom: 2px;
+    text-align: start;
+}
+/* -------------------------
+   CARD DETAILS (slide-up)
+   ------------------------- */
 
-/* Responsive */
+/* Panel sits absolutely at the bottom of the card and is hidden by translating 100% down */
+.card-details {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transform: translateY(100%); /* hidden */
+    transition: transform 0.35s cubic-bezier(.2,.9,.2,1);
+    will-change: transform;
+    background: #ffffff;
+    box-shadow: 0 -6px 18px rgba(11,112,119,0.06);
+    padding: 0;
+    pointer-events: none; /* disable interactions while hidden */
+    z-index: 5;
+}
+
+/* Inner padding/scroll for taller content */
+.card-details-inner {
+    padding: 16px;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+/* When card is opened add .open to the card element — slide the panel up */
+.project-card.open .card-details {
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* Slight visual emphasis for open card */
+.project-card.open {
+    box-shadow: 0 18px 36px rgba(11,112,119,0.12);
+}
+
+/* Enroll button (kept from your original but adjusted) */
+.btn-enroll {
+    width: 100%;
+    display: inline-block;
+    margin-top: 5px;
+    background: #0B7077;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    font-weight: bold;
+}
+
+/* Small fade-in used for any fallback details-box if used elsewhere */
+.details-box {
+    display: none;
+    margin-top: 20px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: var(--box-shadow);
+    animation: fadeIn 0.4s ease;
+}
+.details-box.active { display: block; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* -------------------------
+   Accessibility & responsive
+   ------------------------- */
+
+/* Respect user preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .project-card, .card-details, .details-box { transition: none !important; transform: none !important; }
+    .card-details { position: relative; pointer-events: auto; }
+}
+
+/* Responsive: switch to single column on smaller screens */
 @media (max-width: 768px) {
     .projects-grid {
         display: flex;
@@ -424,9 +561,13 @@ header {
 
     .projects-grid .project-card {
         width: 90%; /* or set a fixed width like 320px if you want */
-        max-width: 400px;
+        max-width: 420px;
         margin-bottom: 20px;
+        height: auto; /* let card grow on mobile so details fit */
     }
+
+    /* make inner details area smaller on very small screens */
+    .card-details-inner { max-height: 300px; }
 
     .section-title {
         font-size: 2rem;
@@ -434,142 +575,167 @@ header {
     }
 }
 
+/* Optional: ensure images don't push the height on small screens */
+@media (max-width: 480px) {
+    .project-img { height: 200px; }
+}
 
 
 
-/* Testimonials */
-        .testimonials {
-            background: linear-gradient(to bottom, #ffffff, #ffffff);
-            padding: 80px 0;
-            overflow: hidden;
-        }
-        
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            
-        }
-        
-        .section-title {
-            text-align: center;
-            margin-bottom: 60px;
-        }
-        
-        .section-title h2 {
-            font-size: 2.5rem;
-            color: var(--primary);
-        }
-        
-        .testimonial-track {
-            display: flex;
-            gap: 30px;
-            width: max-content;
-            animation: scroll 40s linear infinite;
-        }
-        
-        .testimonial-card {
-            flex: 0 0 350px;
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 30px;
-            box-shadow: var(--box-shadow);
-            position: relative;
-            border: 2px solid;
-            overflow: hidden;
-        }
 
-        /* ⭐ Position stars in top-left corner */
-        .frame-16 {
-            display: flex;
-            gap: 4px;
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            z-index: 2;
-        }
+/* ---------- Testimonials: manual carousel (arrows + drag + keyboard) ---------- */
 
-        .img-9 {
-            width: 24px;
-            height: 24px;
-        }
-        .rectangle-3 {
-            position: relative;
-            width: 60px;
-            height: 60px;
-            border-radius: 38px;
-            object-fit: cover;
-        }
-        /* Add spacing below stars so content doesn’t overlap */
-        .testimonial-content {
-            margin-top: 40px;
-            font-style: italic;
-            color: var(--gray);
-        }
+.testimonials {
+  background: linear-gradient(to bottom, #ffffff, #ffffff);
+  padding: 80px 0;
+  /* keep overflow hidden on section level; viewport manages inner overflow */
+}
 
-                
-        .testimonial-card:before {
-            content: '"';
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            font-size: 5rem;
-            color: var(--light-gray);
-            font-family: Georgia, serif;
-            line-height: 1;
-        }  
-        
-        .testimonial-author {
-            display: flex;
-            align-items: center;
-            margin-top: 20px;
-        }
-        
-        .author-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: var(--light-gray);
-            margin-right: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1.5rem;
-            color: var(--primary);
-        }
-        
-        .author-info h4 {
-            margin-bottom: 5px;
-            color: var(--primary);
-        }
-        
-        .author-info p {
-            color: var(--dark);
-            font-size: 0.9rem;
-            margin: 0;
+.testimonial-viewport {
+  overflow: hidden;            /* visible window */
+  width: 100%;
+  position: relative;
+}
 
-        }
+/* Track: no auto-animation, horizontal flex layout */
+.testimonial-track {
+  display: flex;
+  gap: 30px;
+  width: max-content;          /* track width based on children */
+  scroll-behavior: smooth;     /* smooth scroll when JS moves it */
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 6px;         /* space for optional scrollbar */
+  /* animation removed intentionally to make it manual */
+}
 
-        @keyframes scroll {
-            0% { transform: translateX(0%); }
-            100% { transform: translateX(-100%); }
-        }
-        
-        .testimonial-grid {
-            position: relative;
+/* Each card keeps your original sizing */
+.testimonial-card {
+  flex: 0 0 350px;             
+  background: white;
+  border-radius: var(--border-radius);
+  padding: 30px;
+  box-shadow: var(--box-shadow);
+  position: relative;
+  border: 2px solid;
+  overflow: hidden;
+}
 
-            width: 100%;
-        }
-        
-        .testimonial-grid:hover .testimonial-track {
-            animation-play-state: paused;
-        }
+/* stars position */
+.frame-16 {
+  display: flex;
+  gap: 4px;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 2;
+}
+
+.img-9 { width: 24px; height: 24px; }
+
+.rectangle-3 {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  border-radius: 38px;
+  object-fit: cover;
+}
+
+/* testimonial text */
+.testimonial-content {
+  margin-top: 40px;
+  font-style: italic;
+  color: var(--gray);
+}
+
+.testimonial-card:before {
+  content: '"';
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 5rem;
+  color: var(--light-gray);
+  font-family: Georgia, serif;
+  line-height: 1;
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.author-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--light-gray);
+  margin-right: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: var(--primary);
+}
+
+.author-info h4 { margin-bottom: 5px; color: var(--primary); }
+.author-info p  { color: var(--dark); font-size: 0.9rem; margin: 0; }
 
 
 
-        
+/* Grid container */
+.testimonial-grid {
+  position: relative;
+  width: 100%;
+}
+
+/* ------- Arrow / Nav styles ------- */
+.testimonial-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 6;
+  background: rgba(255,255,255,0.95);
+  border: 1px solid #e6e6e6;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+  opacity: 0.98;
+}
+
+/* hover */
+.testimonial-nav:hover {
+  transform: translateY(-50%) scale(1.05);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.12);
+}
+
+/* left / right positions */
+.testimonial-nav.prev { left: 8px; }
+.testimonial-nav.next { right: 8px; }
+
+/* small-screen tweaks */
+@media (max-width: 768px) {
+  .testimonial-nav { width: 36px; height: 36px; font-size: 20px; }
+  .testimonial-nav.prev { left: 6px; }
+  .testimonial-nav.next { right: 6px; }
+}
+
+/* disabled state for navs when start/end reached */
+.testimonial-nav[disabled] { opacity: 0.35; cursor: default; pointer-events: none; }
+
+/* optional: styling while dragging */
+.testimonial-viewport.dragging { cursor: grabbing; user-select: none; }
+
+/* optional: hide native scrollbar but keep scrolling capability on webkit */
+.testimonial-viewport::-webkit-scrollbar { height: 8px; }
+
 /* Pricing Section */
 .pricing-grid {
     
@@ -824,6 +990,23 @@ header {
 
 /* 📱 Mobile (width ≤ 768px) */
 @media (max-width: 768px) {
+   /* Global headings */
+  h1 { font-size: 2.2rem; line-height: 1.15; }
+  h2 { font-size: 1.6rem; line-height: 1.18; }
+  h3 { font-size: 1.3rem; line-height: 1.2; }
+
+  /* Hero specific (overrides earlier hero-text sizes) */
+  .hero-text h1 { font-size: 2.2rem; }
+  .hero-text h2 { font-size: 1.8rem; }
+  .hero-text h3 { font-size: 1.4rem; }
+
+  /* Section titles */
+  .section-title { margin-bottom: 32px; }
+  .section-title h2 { font-size: 1.6rem; }
+
+  /* Project / card text */
+  .project-title { font-size: 1rem; }
+
   .pricing-grid {
     display: flex;
     flex-direction: column;
@@ -833,6 +1016,25 @@ header {
     padding: 0 15px 40px;
     margin: 0 auto;
   }
+
+  /* Testimonials */
+  .testimonial-card { padding: 20px; }
+  .testimonial-content { font-size: 0.95rem; margin-top: 28px; }
+  .author-info p { font-size: 0.85rem; }
+
+  /* Buttons */
+  .btn { font-size: 0.95rem; padding: 10px 18px; }
+  .hero-btns .btn { padding: 10px 18px; }
+
+  /* Ensure hero image doesn't push content too much */
+  .hero-img { max-height: 300px; height: auto; }
+
+  /* Slightly reduce header spacing for mobile */
+  header { padding: 10px 0; }
+  .navbar { gap: 10px; }
+
+  /* Misc spacing */
+  .section { padding: 40px 0; }
 
   .pricing-card {
     width: 90%;
@@ -874,12 +1076,12 @@ header {
   }
 
   .text-wrapper-18 {
-    font-size: 1.2rem;
+    font-size: 1rem;
   }
 
   .text-wrapper-19,
   .text-wrapper-22 {
-    font-size: 22px;
+    font-size: 30px;
   }
 
   .text-wrapper-20,
@@ -913,7 +1115,7 @@ header {
 
   .text-wrapper-19,
   .text-wrapper-22 {
-    font-size: 20px;
+    font-size: 30px;
   }
 
   .text-wrapper-20,
@@ -955,7 +1157,7 @@ header {
 .faq-question {
     padding: 20px 25px;
     font-size: 1.1rem;
-    font-weight: 600;
+    font-weight: 400;
     cursor: pointer;
     display: flex;
     justify-content: space-between;
@@ -1179,7 +1381,7 @@ footer {
     }
     
     .hero h1 {
-        font-size: 2.5rem;
+        font-size: 2rem;
     }
     
     .section {
@@ -1260,129 +1462,411 @@ footer {
 }
 
 
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
 
-        .modal-content {
-            background: white;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 500px;
-            padding: 30px;
-            position: relative;
-            animation: modalFade 0.3s;
-        }
+.modal-content {
+    background: white;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+    padding: 30px;
+    position: relative;
+    animation: modalFade 0.3s;
+}
 
-        @keyframes modalFade {
-            from { opacity: 0; transform: translateY(-50px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+@keyframes modalFade {
+    from { opacity: 0; transform: translateY(-50px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
-        .close-modal {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--gray);
-        }
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--gray);
+}
 
-        .modal h2 {
-            margin-bottom: 20px;
-            color: var(--primary);
-            text-align: center;
-        }
+.modal h2 {
+    margin-bottom: 20px;
+    color: var(--primary);
+    text-align: center;
+}
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+.form-group {
+    margin-bottom: 20px;
+}
 
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
 
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-            transition: border 0.3s;
-        }
+.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border 0.3s;
+}
 
-        .form-control:focus {
-            border-color: var(--primary);
-            outline: none;
-        }
+.form-control:focus {
+    border-color: var(--primary);
+    outline: none;
+}
 
-        .success-message {
-            text-align: center;
-            padding: 30px;
-            display: none;
-        }
+.success-message {
+    text-align: center;
+    padding: 30px;
+    display: none;
+}
 
-        .success-message i {
-            font-size: 60px;
-            color: var(--success);
-            margin-bottom: 20px;
-        }
+.success-message i {
+    font-size: 60px;
+    color: var(--success);
+    margin-bottom: 20px;
+}
 
-        .success-message h3 {
-            margin-bottom: 15px;
-            color: var(--success);
-        }
+.success-message h3 {
+    margin-bottom: 15px;
+    color: var(--success);
+}
 
-        /* Responsive Design */
-        @media (max-width: 992px) {
-            .services-grid, .testimonials-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .pricing-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .footer-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
+/* Responsive Design */
+@media (max-width: 992px) {
+    .services-grid, .testimonials-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .pricing-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
 
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            nav ul {
-                margin: 20px 0;
-            }
-            
-            .search-bar {
-                margin-top: 15px;
-            }
-            
-            .hero h1 {
-                font-size: 32px;
-            }
-            
-            .services-grid, .testimonials-grid, .pricing-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .footer-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    nav ul {
+        margin: 20px 0;
+    }
+    
+    .search-bar {
+        margin-top: 15px;
+    }
+    
+    .hero h1 {
+        font-size: 32px;
+    }
+    
+    .services-grid, .testimonials-grid, .pricing-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .footer-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ----------------- MOBILE HERO OVERRIDES (paste at EOF) ----------------- */
+
+/* Ensure correct viewport behavior (HTML must include <meta name="viewport"...>) */
+
+/* Tablet and smaller */
+@media (max-width: 992px) {
+  .hero-content {
+    flex-direction: column;
+    text-align: left !important;       /* force left aligned headings */
+    align-items: flex-start !important;
+    gap: 18px;
+    padding: 20px 16px;                /* prevent edges touching screen */
+  }
+
+  .hero-text {
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    text-align: left !important;
+    align-items: flex-start !important;
+  }
+
+  /* Slightly smaller headings for tablet */
+  .hero-text h1 { font-size: 2.6rem !important; line-height: 1.06; }
+  .hero-text h2 { font-size: 2.1rem !important; }
+  .hero-text h3 { font-size: 1.9rem !important; }
+
+  /* Keep hero buttons left aligned on tablet */
+  .hero-btns {
+    justify-content: flex-start !important;
+    width: 100%;
+    gap: 12px;
+  }
+}
+
+/* Mobile phones */
+@media (max-width: 768px) {
+  .hero {
+    padding-top: calc(var(--override-header-height) + 6px);
+    padding-bottom: 18px;
+  }
+
+  .hero-img {
+    max-height: 260px !important;
+    width: 100%;
+    object-fit: contain;
+    margin-top: 8px;
+  }
+
+  /* Keep buttons side-by-side on phones (do not stack) */
+  .hero-btns {
+    flex-direction: row !important;
+    gap: 10px !important;
+    justify-content: flex-start !important;
+    width: 100%;
+    flex-wrap: nowrap;
+  }
+
+  .hero-btns .btn {
+    width: auto !important;
+    padding: 10px 16px !important;
+    font-size: 0.95rem !important;
+    white-space: nowrap !important;
+  }
+
+  /* Make H1s mobile friendly (single-line friendly) */
+  .hero-text h1 { font-size: 1.9rem !important; line-height: 1.05; }
+  .hero-text p  { font-size: 1rem !important; margin-bottom: 10px; }
+
+  /* keep header compact */
+  header { padding: 10px 0 !important; }
+}
+
+/* Small phones - tighten a bit more */
+@media (max-width: 480px) {
+  .hero-content { padding: 14px 12px !important; gap: 12px !important; }
+  .hero-text h1 { font-size: 1.6rem !important; }
+  .hero-btns .btn { padding: 9px 12px !important; font-size: 0.88rem !important; }
+}
+
+
+/* ================= TERMS SECTION (UPDATED) ================= */
+.terms-section {
+  padding: 80px 0;
+}
+
+/* Back button + title row (back arrow inline with title) */
+.terms-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+/* inline back button (use FontAwesome arrow or simple text) */
+.back-link-inline {
+  font-size: 1.6rem;
+  color: #0B7077;
+  text-decoration: none;
+  padding: 6px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Title */
+.terms-title {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #0B7077;
+  margin: 0;              /* removed previous bottom margin to use row gap */
+  line-height: 1.05;
+}
+
+.highlight {
+  color: #fd661f;
+}
+
+/* last updated / company meta */
+.last-updated {
+  font-size: 1rem;
+  margin: 12px 0 18px;
+  color: #333;
+}
+
+/* divider */
+.divider {
+  height: 2px;
+  border: none;
+  background: #e0e0e0;
+  margin: 16px 0 26px;
+}
+
+/* terms headings & paragraphs */
+.terms-list h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0B7077;
+  margin: 18px 0 6px;
+}
+
+.terms-list p {
+  font-size: 1rem;
+  color: #444;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+/* small list/bullet tweaks (if any bullets used) */
+.terms-list ul {
+  padding-left: 1.05rem;
+  margin: 6px 0 12px;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 1024px) {
+  .terms-section { padding: 56px 0; }
+  .terms-title { font-size: 2rem; }
+}
+
+@media (max-width: 768px) {
+  /* stack and tighten spacing for mobile */
+  .terms-section {
+    padding: 80px 0;
+  }
+
+  .terms-section .container {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  /* inline back + title should appear compact */
+  .terms-title-row {
+    gap: 0px;
+    margin-bottom: 10px;
+  }
+
+  .back-link-inline {
+    font-size: 1.25rem;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: inline-flex;
+  }
+
+  .terms-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+  }
+
+  .last-updated {
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+  }
+
+  .divider {
+    margin: 12px 0 14px;
+  }
+
+  .terms-list h3 {
+    font-size: 0.98rem;
+    margin-top: 10px;
+  }
+
+  .terms-list p {
+    font-size: 0.9rem;
+    line-height: 1.35;
+    margin-bottom: 10px;
+  }
+}
+
+/* Extra small screens (phones) */
+@media (max-width: 480px) {
+  .back-link-inline { font-size: 1.1rem; width: 34px; height: 34px; }
+  .terms-title { font-size: 1.05rem; }
+  .terms-list h3 { font-size: 0.95rem; }
+  .terms-list p { font-size: 0.85rem; line-height: 1.3; }
+}
+
+
+/* ================= CANCELLATION & REFUND POLICY SECTION (UPDATED) ================= */
+.cancelrefund-section {
+  padding: 80px 0;
+}
+/* ================= RESPONSIVE ================= */
+@media (max-width: 1024px) {
+  .cancelrefund-section { padding: 56px 0; }
+  .terms-title { font-size: 2rem; }
+}
+
+@media (max-width: 768px) {
+  /* stack and tighten spacing for mobile */
+  .cancelrefund-section {
+    padding: 80px 0;
+  }
+  .terms-title h2 { font-size: 1.6rem; }
+
+  .cancelrefund-section .container {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}
+
+/* =================  PRIVACY POLICY SECTION (UPDATED) ================= */
+.privacypolicy-section {
+  padding: 80px 0;
+}
+/* ================= RESPONSIVE ================= */
+@media (max-width: 1024px) {
+  .privacypolicy-section { padding: 56px 0; }
+  .terms-title { font-size: 2rem; }
+}
+
+@media (max-width: 768px) {
+  /* stack and tighten spacing for mobile */
+  .privacypolicy-section {
+    padding: 80px 0;
+  }
+  .terms-title h2 { font-size: 1.6rem; }
+
+  .cancelrefund-section .container {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}
+
+/* Hide BOTH nav and hamburger on mobile */
+body.terms-page header .nav-links,
+body.terms-page header .menu-toggle {
+  display: none !important;
+}
+
+/* Desktop should show ONLY the nav links */
+@media (min-width: 769px) {
+  body.terms-page header .nav-links {
+    display: flex !important;
+  }
+  body.terms-page header .menu-toggle {
+    display: none !important;
+  }
+}
