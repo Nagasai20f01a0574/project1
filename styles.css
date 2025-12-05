@@ -433,7 +433,6 @@ header.container {
     position: relative;
     width: 280px;
     height: 300px;
-    border: 2px solid;              /* keeps your border - optionally set color with --primary or a hex */
     background: white;
     border-radius: 10px;
     overflow: hidden;
@@ -616,7 +615,6 @@ header.container {
   padding: 30px;
   box-shadow: var(--box-shadow);
   position: relative;
-  border: 2px solid;
   overflow: hidden;
 }
 
@@ -779,7 +777,6 @@ header.container {
   font-weight: 600;
   line-height: normal;
   font-size: 1.5rem;
-  margin-bottom: 15px;
   color: var(--primary)
 }
 
@@ -794,7 +791,6 @@ header.container {
 .text-wrapper-19 {
   position: relative;
   width: fit-content;
-  margin-top: -1.00px;
   font-family: "Poppins", Helvetica;
   font-weight: 700;
   color: #160e4b;
@@ -1038,7 +1034,7 @@ header.container {
 
   .pricing-card {
     width: 90%;
-    max-width: 350px;
+    max-width: 400px;
     height: auto;
     position: relative;
     margin: 0 auto;
@@ -1284,11 +1280,13 @@ footer {
 
 .contact-info li {
     display: flex;
+    align-items: center;   /* 🔥 THIS FIXES THE MISALIGNMENT */
+    gap: 12px;             /* optional: adds clean space */
     margin-bottom: 15px;
 }
 
 .contact-info i {
-    margin-right: 15px;
+    margin-right: 10px;
     color: var(--accent);
 }
 
@@ -1670,12 +1668,20 @@ footer {
 }
 
 
-/* ================= TERMS SECTION (UPDATED) ================= */
-.terms-section {
+
+
+/* ======================
+   POLICY PAGES (Terms/Privacy/Refund)
+   Single consolidated block
+   ====================== */
+
+.terms-section,
+.privacypolicy-section,
+.cancelrefund-section {
   padding: 80px 0;
 }
 
-/* Back button + title row (back arrow inline with title) */
+/* Back button + title row */
 .terms-title-row {
   display: flex;
   align-items: center;
@@ -1683,13 +1689,13 @@ footer {
   margin-bottom: 15px;
 }
 
-/* inline back button (use FontAwesome arrow or simple text) */
+/* inline back button */
 .back-link-inline {
   font-size: 1.6rem;
   color: #0B7077;
   text-decoration: none;
   padding: 6px;
-  display: none;
+  display: none;               /* shown on mobile via media query */
   align-items: center;
   justify-content: center;
 }
@@ -1698,23 +1704,27 @@ footer {
 .terms-title {
   font-size: 2.4rem;
   font-weight: 800;
-  color: #0B7077;
-  margin: 0;              /* removed previous bottom margin to use row gap */
+  color: var(--primary);
+  margin: 0;
   line-height: 1.05;
 }
 
-.highlight {
-  color: #fd661f;
+/* Remove any underline/border near the title for these pages */
+.terms-title-row,
+.terms-title {
+  border-bottom: none !important;
 }
 
-/* last updated / company meta */
+
+/* meta */
 .last-updated {
   font-size: 1rem;
   margin: 12px 0 18px;
-  color: #333;
+  color: var(--primary);
+  font-weight: 500;
 }
 
-/* divider */
+/* divider (optional) */
 .divider {
   height: 2px;
   border: none;
@@ -1722,12 +1732,16 @@ footer {
   margin: 16px 0 26px;
 }
 
-/* terms headings & paragraphs */
+.terms-list {
+  margin-left: 20px;
+}
+/* terms content */
 .terms-list h3 {
   font-size: 1.15rem;
-  font-weight: 700;
-  color: #0B7077;
+  font-weight: 600;
+  color: var(--primary);
   margin: 18px 0 6px;
+  border-bottom: none; /* ensure no underline */
 }
 
 .terms-list p {
@@ -1737,136 +1751,79 @@ footer {
   line-height: 1.5;
 }
 
-/* small list/bullet tweaks (if any bullets used) */
 .terms-list ul {
   padding-left: 1.05rem;
   margin: 6px 0 12px;
 }
 
-/* ================= RESPONSIVE ================= */
+/* Responsive adjustments */
+
+/* Tablet */
 @media (max-width: 1024px) {
-  .terms-section { padding: 56px 0; }
+  .terms-section,
+  .privacypolicy-section,
+  .cancelrefund-section { padding: 56px 0; }
+
   .terms-title { font-size: 2rem; }
 }
 
+/* Mobile */
 @media (max-width: 768px) {
-  /* stack and tighten spacing for mobile */
-  .terms-section {
-    padding: 80px 0;
-  }
+  .terms-section,
+  .privacypolicy-section,
+  .cancelrefund-section { padding: 80px 0; }
 
-  .terms-section .container {
+  .terms-section .container,
+  .privacypolicy-section .container,
+  .cancelrefund-section .container {
     padding-left: 14px;
     padding-right: 14px;
   }
 
-  /* inline back + title should appear compact */
-  .terms-title-row {
-    gap: 0px;
-    margin-bottom: 10px;
-  }
+  .terms-title-row { gap: 4px; margin-bottom: 10px; }
 
   .back-link-inline {
-    font-size: 1.25rem;
+    display: inline-flex;
     width: 36px;
     height: 36px;
+    font-size: 1.25rem;
     border-radius: 8px;
-    display: inline-flex;
   }
 
   .terms-title {
-    font-size: 1.2rem;
-    font-weight: 800;
+    font-size: 1.25rem;  /* smaller title on mobile */
+    line-height: 1.15;
   }
 
-  .last-updated {
-    font-size: 0.95rem;
-    margin-bottom: 10px;
-  }
+  .last-updated { font-size: 0.95rem; margin-bottom: 10px; }
 
-  .divider {
-    margin: 12px 0 14px;
-  }
+  .divider { margin: 12px 0 14px; }
 
-  .terms-list h3 {
-    font-size: 0.98rem;
-    margin-top: 10px;
-  }
-
-  .terms-list p {
-    font-size: 0.9rem;
-    line-height: 1.35;
-    margin-bottom: 10px;
-  }
+  .terms-list h3 { font-size: 0.98rem; margin-top: 10px; }
+  .terms-list p  { font-size: 0.9rem; line-height: 1.35; margin-bottom: 10px; }
 }
 
-/* Extra small screens (phones) */
+/* Small phones */
 @media (max-width: 480px) {
   .back-link-inline { font-size: 1.1rem; width: 34px; height: 34px; }
-  .terms-title { font-size: 1.05rem; }
+  .terms-title { font-size: 1.1rem; line-height: 1.2; }
   .terms-list h3 { font-size: 0.95rem; }
   .terms-list p { font-size: 0.85rem; line-height: 1.3; }
 }
 
-
-/* ================= CANCELLATION & REFUND POLICY SECTION (UPDATED) ================= */
-.cancelrefund-section {
-  padding: 80px 0;
-}
-/* ================= RESPONSIVE ================= */
-@media (max-width: 1024px) {
-  .cancelrefund-section { padding: 56px 0; }
-  .terms-title { font-size: 2rem; }
-}
-
-@media (max-width: 768px) {
-  /* stack and tighten spacing for mobile */
-  .cancelrefund-section {
-    padding: 80px 0;
-  }
-  .terms-title h2 { font-size: 1.6rem; }
-
-  .cancelrefund-section .container {
-    padding-left: 14px;
-    padding-right: 14px;
-  }
-}
-
-/* =================  PRIVACY POLICY SECTION (UPDATED) ================= */
-.privacypolicy-section {
-  padding: 80px 0;
-}
-/* ================= RESPONSIVE ================= */
-@media (max-width: 1024px) {
-  .privacypolicy-section { padding: 56px 0; }
-  .terms-title { font-size: 2rem; }
-}
-
-@media (max-width: 768px) {
-  /* stack and tighten spacing for mobile */
-  .privacypolicy-section {
-    padding: 80px 0;
-  }
-  .terms-title h2 { font-size: 1.6rem; }
-
-  .cancelrefund-section .container {
-    padding-left: 14px;
-    padding-right: 14px;
-  }
-}
-
-/* Hide BOTH nav and hamburger on mobile */
+/* Hide mobile menu and hamburger on policy pages (desktop will show nav) */
 body.terms-page header .nav-links,
 body.terms-page header .menu-toggle {
   display: none !important;
 }
-
-/* Desktop should show ONLY the nav links */
 @media (min-width: 769px) {
-  body.terms-page header .nav-links {
-    display: flex !important;
-  }
-  body.terms-page header .menu-toggle {
-    display: none !important;
-  }
+  body.terms-page header .nav-links { display: flex !important; }
+  body.terms-page header .menu-toggle { display: none !important; }
+}
+
+/* Remove the decorative h2::after only on policy pages */
+.terms-page .terms-title::after,
+.terms-page .privacypolicy-section .terms-title::after,
+.terms-page .cancelrefund-section .terms-title::after {
+  display: none !important;
 }
