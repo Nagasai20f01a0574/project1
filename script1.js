@@ -279,6 +279,8 @@ document.addEventListener('DOMContentLoaded', animateProjects);
   updateNav();
 })();
 
+
+
 // =======================
 // 📩 CONTACT POPUP (Iframe-based)
 // =======================
@@ -302,75 +304,139 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // =======================
-// 🧾 CONTACT FORM SUBMISSION (Google Apps Script)
+// 🧾 CONTACT FORM SUBMISSION (client-side)
 // =======================
-const modal = document.getElementById('contactModal');
-const contactBtns = document.querySelectorAll('.contact-btn');
-const closeModal = document.querySelector('.close-modal');
-const closeSuccess = document.getElementById('closeSuccess');
-const contactForm = document.getElementById('contactForm');
-const contactFormContainer = document.getElementById('contactFormContainer');
-const successMessage = document.getElementById('successMessage');
 
-// Open modal
-if (contactBtns && modal) {
-  contactBtns.forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.preventDefault();
-      modal.style.display = 'flex';
-      contactFormContainer.style.display = 'block';
-      successMessage.style.display = 'none';
+document.addEventListener('DOMContentLoaded', function () {
+  // Elements
+  const modal = document.getElementById('contactModal');
+  const contactBtns = document.querySelectorAll('.contact-btn');
+  const closeModal = document.querySelector('.close-modal');
+  const closeSuccess = document.getElementById('closeSuccess');
+  const contactForm = document.getElementById('contactForm');
+  const contactFormContainer = document.getElementById('contactFormContainer');
+  const successMessage = document.getElementById('successMessage');
+  const spinnerOverlay = document.getElementById('spinnerOverlay');
+
+  // Defensive guards
+  const submitBtn = contactForm ? contactForm.querySelector('button[type="submit"]') : null;
+
+  // Open modal when any .contact-btn clicked
+  if (contactBtns && modal) {
+    contactBtns.forEach(btn => {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        modal.style.display = 'flex';
+        if (contactFormContainer) contactFormContainer.style.display = 'block';
+        if (successMessage) successMessage.style.display = 'none';
+      });
     });
-  });
-}
+  }
 
-// Close modal
-if (closeModal) closeModal.addEventListener('click', () => modal.style.display = 'none');
-if (closeSuccess) closeSuccess.addEventListener('click', () => modal.style.display = 'none');
-window.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
+  // Close handlers
+  if (closeModal) closeModal.addEventListener('click', () => { modal.style.display = 'none'; });
+  if (closeSuccess) closeSuccess.addEventListener('click', () => { modal.style.display = 'none'; });
+  window.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
 
-// Success function
+// Helper: show success panel (with animation + reset spinner/button)
 function showSuccess() {
-  contactFormContainer.style.display = 'none';
-  successMessage.style.display = 'block';
-  contactForm.reset();
+
+  // ⭐ Smooth spinner fade-out animation
+  if (spinnerOverlay) {
+    spinnerOverlay.classList.add("hide");   // start fade-out animation
+
+    setTimeout(() => {
+      spinnerOverlay.style.display = "none"; // fully hide
+      spinnerOverlay.classList.remove("hide");
+    }, 300); // fade-out duration must match CSS
+  }
+
+  // Enable submit button again
+  if (submitBtn) {
+    submitBtn.disabled = false;
+    submitBtn.style.opacity = '';
+    submitBtn.style.cursor = '';
+  }
+
+  // ⭐ Fade-out form (optional but recommended)
+  if (contactFormContainer) {
+    contactFormContainer.classList.add("form-hide");
+
+    setTimeout(() => {
+      contactFormContainer.style.display = 'none';
+      contactFormContainer.classList.remove("form-hide");
+    }, 250);
+  }
+
+  // ⭐ Slide / fade-in success message
+  setTimeout(() => {
+    if (successMessage) {
+      successMessage.style.display = 'block';
+      successMessage.classList.add("show-success");
+    }
+  }, 260);
+
+  // Reset form
+  if (contactForm) contactForm.reset();
 }
 
-// Handle form submission
-if (contactForm) {
-  contactForm.addEventListener('submit', async e => {
+
+  // Minimal handler if form is missing
+  if (!contactForm) return;
+
+  // Submit handler
+  contactForm.addEventListener('submit', async function (e) {
     e.preventDefault();
 
+    // Build payload
     const payload = {
-      name: document.getElementById('name').value.trim(),
-      email: document.getElementById('email').value.trim(),
-      phone: document.getElementById('phone').value.trim(),
-      service: document.getElementById('service').value,
-      message: document.getElementById('message').value.trim()
+      name: (document.getElementById('name')?.value || '').trim(),
+      email: (document.getElementById('email')?.value || '').trim(),
+      phone: (document.getElementById('phone')?.value || '').trim(),
+      service: (document.getElementById('service')?.value || '').trim(),
+      message: (document.getElementById('message')?.value || '').trim()
     };
 
     try {
+      // show spinner immediately and disable submit
+      if (spinnerOverlay) spinnerOverlay.style.display = 'flex';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.7';
+        submitBtn.style.cursor = 'not-allowed';
+      }
+
       const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyrknD-0nXM-n0jAvJmzsKIJrmVPD1FFELsoIxCRWp7DJWI7W5J65v8ItSlUzrboyH-vA/exec";
 
+      // POST to Apps Script
       const res = await fetch(WEB_APP_URL, {
-        method: "POST",
-        body: JSON.stringify(payload) // no explicit content-type
+        method: 'POST',
+        body: JSON.stringify(payload)
+        // Note: leaving out Content-Type is fine for GAS endpoints expecting raw postData
       });
 
       const text = await res.text();
       let result;
-      try { result = JSON.parse(text); } 
-      catch { result = { status: "error", message: text }; }
+      try { result = JSON.parse(text); } catch (err) { result = { status: 'error', message: text }; }
 
-      if (result.status === "success") {
+      if (result && result.status === 'success') {
+        // success
         showSuccess();
       } else {
-        alert("Server error: " + (result.message || "Please try again"));
+        // server returned error
+        if (spinnerOverlay) spinnerOverlay.style.display = 'none';
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = ''; submitBtn.style.cursor = ''; }
+        alert("Server error: " + (result?.message || "Please try again"));
       }
+
     } catch (err) {
-      console.error("Submit error:", err);
+      // network or unexpected error
+      console.error('Submit error:', err);
+      if (spinnerOverlay) spinnerOverlay.style.display = 'none';
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = ''; submitBtn.style.cursor = ''; }
       alert("Network error — check your Web App URL and deployment settings.");
     }
   });
-}
+
+});
 
