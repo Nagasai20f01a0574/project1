@@ -96,18 +96,19 @@ img {
     transform: translateY(-3px);
     box-shadow: 0 6px 15px rgba(255, 255, 255, 0.3);
 }
+/* Accent Button — override base */
 .btn-accent {
-    background: var(--accent);
-    color: #0B7077;
-    border: 2px solid #0B7077;
+    background: var(--primary);   /* primary */
+    color: #ffffff;               /* white text */
 }
 
+/* HOVER — invert colors */
 .btn-accent:hover {
-    background: var(--primary);
-    color: var(--white);
+    background: #ffffff;          /* white */
+    color: var(--primary);        /* primary text */
     border-color: var(--primary);
     transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(255, 255, 255, 0.3);
+    box-shadow: 0 6px 15px rgba(11,112,119,0.25);
 }
 
 [id] {
@@ -270,32 +271,6 @@ header.container {
     margin-bottom: 30px;
 }
 
-.btn {
-    display: inline-block;
-    padding: 12px 30px;
-    background: var(--primary);
-    color: white;
-    text-decoration: none;
-    border-radius: 30px;
-    font-weight: 600;
-    transition: var(--transition);
-    border: none;
-    cursor: pointer;
-}
-
-.btn:hover {
-    background: var(--secondary);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(67, 97, 238, 0.3);
-}
-
-.btn-accent {
-    background: var(--accent);
-}
-
-.btn-accent:hover {
-    background: #d81b60;
-}
 
 .reviews {
     display: flex;
@@ -359,10 +334,23 @@ header.container {
 
 /* ----------- FIXED 768px BREAKPOINT ----------- */
 @media (max-width: 768px) {
-    .hero-img {
-        max-height: 300px;
+   
+    .hero-image {
+      width: 100%;
+      display: flex;
+      justify-content: center;   /* center horizontally */
     }
-    
+
+    .hero-img {
+      width: 80% !important;      /* increase size */
+      max-width: 380px !important;
+      height: auto !important;
+      object-fit: contain;
+      margin: 0 auto;             /* center it */
+      display: block;
+    }
+
+
     .hero-btns {
         flex-direction: row !important;        /* FIX: Buttons side-by-side */
         justify-content: flex-start !important;
@@ -1547,7 +1535,77 @@ footer {
     
 
 }
-#spinnerOverlay { display:none; position:absolute; inset:0; background:rgba(255,255,255,0.9); align-items:center; justify-content:center; border-radius:8px; } .spinner { font-weight:600; }
+
+/* ================================
+   ⭐ SPINNER OVERLAY + ANIMATIONS
+   ================================ */
+
+#spinnerOverlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.9);
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  opacity: 1;
+}
+
+/* Fade-out animation for spinner */
+#spinnerOverlay.hide {
+  animation: fadeOut 0.3s forwards;
+}
+
+/* Spinner pulse animation */
+.spinner {
+  font-weight: 600;
+  font-size: 20px;
+  animation: pulse 0.8s infinite ease-in-out;
+}
+
+/* Pulse effect */
+@keyframes pulse {
+  0%   { transform: scale(1); opacity: 0.7; }
+  50%  { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.7; }
+}
+
+/* Fade-out keyframe */
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+
+/* ================================
+   ⭐ FORM FADE-OUT
+   ================================ */
+
+.form-hide {
+  animation: fadeForm 0.25s forwards;
+}
+
+@keyframes fadeForm {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(10px); }
+}
+
+
+/* ================================
+   ⭐ SUCCESS MESSAGE SLIDE-IN
+   ================================ */
+
+.show-success {
+  animation: successSlide 0.35s ease forwards;
+}
+
+@keyframes successSlide {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+
+
 
 /* Responsive Design */
 @media (max-width: 992px) {
@@ -1776,7 +1834,6 @@ footer {
   .terms-section,
   .privacypolicy-section,
   .cancelrefund-section { padding: 80px 0; }
-
   .terms-section .container,
   .privacypolicy-section .container,
   .cancelrefund-section .container {

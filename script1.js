@@ -338,8 +338,48 @@ document.addEventListener('DOMContentLoaded', function () {
   if (closeSuccess) closeSuccess.addEventListener('click', () => { modal.style.display = 'none'; });
   window.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
 
-// Helper: show success panel (also resets spinner/button) 
-function showSuccess() { if (spinnerOverlay) spinnerOverlay.style.display = 'none'; if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = ''; submitBtn.style.cursor = ''; } if (contactFormContainer) contactFormContainer.style.display = 'none'; if (successMessage) successMessage.style.display = 'block'; if (contactForm) contactForm.reset(); }
+// Helper: show success panel (with animation + reset spinner/button)
+function showSuccess() {
+
+  // ⭐ Smooth spinner fade-out animation
+  if (spinnerOverlay) {
+    spinnerOverlay.classList.add("hide");   // start fade-out animation
+
+    setTimeout(() => {
+      spinnerOverlay.style.display = "none"; // fully hide
+      spinnerOverlay.classList.remove("hide");
+    }, 300); // fade-out duration must match CSS
+  }
+
+  // Enable submit button again
+  if (submitBtn) {
+    submitBtn.disabled = false;
+    submitBtn.style.opacity = '';
+    submitBtn.style.cursor = '';
+  }
+
+  // ⭐ Fade-out form (optional but recommended)
+  if (contactFormContainer) {
+    contactFormContainer.classList.add("form-hide");
+
+    setTimeout(() => {
+      contactFormContainer.style.display = 'none';
+      contactFormContainer.classList.remove("form-hide");
+    }, 250);
+  }
+
+  // ⭐ Slide / fade-in success message
+  setTimeout(() => {
+    if (successMessage) {
+      successMessage.style.display = 'block';
+      successMessage.classList.add("show-success");
+    }
+  }, 260);
+
+  // Reset form
+  if (contactForm) contactForm.reset();
+}
+
 
   // Minimal handler if form is missing
   if (!contactForm) return;
